@@ -300,6 +300,8 @@ callbuiltin(struct fncall *f)
  case B_print:
    printf("= %4.4g\n", v);
    return v;
+ case B_add:
+   return v+1;
  default:
    yyerror("Unknown built-in function %d", functype);
    return 0.0;

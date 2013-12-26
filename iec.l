@@ -50,6 +50,7 @@ EXP	([Ee][-+]?[0-9]+)
 "exp"   { yylval.fn = B_exp; return FUNC; }
 "log"   { yylval.fn = B_log; return FUNC; }
 "print" { yylval.fn = B_print; return FUNC; }
+"ADD"   { yylval.fn = B_add; return FUNC; }
 
  /* debug hack */
 "debug"[0-9]+ { debug = atoi(&yytext[5]); printf("debug set to %d\n", debug); }
