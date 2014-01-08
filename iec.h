@@ -45,13 +45,6 @@ void symlistfree(struct symlist *sl);
  *  C user function call
  */ 
 
-enum bifs {			/* built-in functions */
-  B_sqrt = 1,
-  B_exp,
-  B_log,
-  B_print,
-  B_add
-};
 
 /* nodes in the Abstract Syntax Tree */
 /* all have common initial nodetype */
@@ -65,7 +58,7 @@ struct ast {
 struct fncall {			/* built-in function */
   int nodetype;			/* type F */
   struct ast *l;
-  enum bifs functype;
+  struct symbol *s;
 };
 
 struct ufncall {		/* user function */
@@ -100,7 +93,7 @@ struct symasgn {
 /* build an AST */
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newcmp(int cmptype, struct ast *l, struct ast *r);
-struct ast *newfunc(int functype, struct ast *l);
+struct ast *newfunc(struct symbol *s, struct ast *l);
 struct ast *newcall(struct symbol *s, struct ast *l);
 struct ast *newref(struct symbol *s);
 struct ast *newasgn(struct symbol *s, struct ast *v);

@@ -46,11 +46,7 @@ EXP	([Ee][-+]?[0-9]+)
 "let"   { return LET;}
 
  /* built in functions */
-"sqrt"  { yylval.fn = B_sqrt; return FUNC; }
-"exp"   { yylval.fn = B_exp; return FUNC; }
-"log"   { yylval.fn = B_log; return FUNC; }
-"print" { yylval.fn = B_print; return FUNC; }
-"ADD"   { yylval.fn = B_add; return FUNC; }
+"ADD"   { yylval.s = lookup(yytext); return FUNC; }
 
  /* debug hack */
 "debug"[0-9]+ { debug = atoi(&yytext[5]); printf("debug set to %d\n", debug); }

@@ -26,7 +26,18 @@ symhash(char *sym)
 
   return hash;
 }
-
+void init_symtab(void) {
+	char *sym = "ADD";
+	struct symbol arg2 = {"arg2", 0, NULL, NULL};
+	struct symlist arg2list = {&arg2, NULL};
+	struct symbol arg1 = {"arg1", 0, NULL, &arg2list};
+	struct symlist arg1list = {&arg1, &arg2list};
+    struct symbol *sp = &symtab[symhash(sym)%NHASH];
+    sp->name = strdup(sym);
+    sp->value = 0;
+    sp->func = NULL;
+    sp->syms = &arg1list;
+}
 struct symbol *
 lookup(char* sym)
 {
@@ -98,7 +109,7 @@ newcmp(int cmptype, struct ast *l, struct ast *r)
 }
 
 struct ast *
-newfunc(int functype, struct ast *l)
+newfunc(struct symbol *s, struct ast *l)
 {
   struct fncall *a = malloc(sizeof(struct fncall));
   
@@ -108,7 +119,7 @@ newfunc(int functype, struct ast *l)
   }
   a->nodetype = 'F';
   a->l = l;
-  a->functype = functype;
+  a->s = s;
   return (struct ast *)a;
 }
 
@@ -287,25 +298,30 @@ eval(struct ast *a)
 static double
 callbuiltin(struct fncall *f)
 {
-  enum bifs functype = f->functype;
-  double v = eval(f->l);
+  struct ast *args = f->l;
+  double *oldval, *newval;
+  double sum;
+  int nargs = 3;
+  int i;
 
- switch(functype) {
- case B_sqrt:
-   return sqrt(v);
- case B_exp:
-   return exp(v);
- case B_log:
-   return log(v);
- case B_print:
-   printf("= %4.4g\n", v);
-   return v;
- case B_add:
-   return v+1;
- default:
-   yyerror("Unknown built-in function %d", functype);
-   return 0.0;
- }
+  /* prepare to save them */
+  newval = (double *)malloc(nargs * sizeof(double));
+  /* evaluate the arguments */
+  for(i = 0; i < nargs; i++){
+    if(args->nodetype == 'L') {	/* if this is a list node */
+      newval[i] = eval(args->l);
+      args = args->r;
+    } else {			/* if it's the end of the list */
+      newval[i] = eval(args);
+      args = NULL;
+    }
+  }
+	for(i = 0; i < nargs; i++){
+	  printf("args = %g\n", newval[i]);
+	  sum += newval[i];
+	}
+  free(newval);
+    return sum;
 }
 
 static double
@@ -436,6 +452,7 @@ yyerror(char *s, ...)
 int
 main()
 {
+	init_symtab();
   printf("> "); 
   return yyparse();
 }
@@ -489,7 +506,7 @@ dumpast(struct ast *a, int level)
     return;
 	              
   case 'F':
-    printf("builtin %d\n", ((struct fncall *)a)->functype);
+    printf("builtin %s\n", ((struct fncall *)a)->s->name);
     dumpast(a->l, level);
     return;
 

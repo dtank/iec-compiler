@@ -1519,7 +1519,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 68 "iec.y"
-    { (yyval.a) = newfunc((yyvsp[(1) - (4)].fn), (yyvsp[(3) - (4)].a)); }
+    { (yyval.a) = newfunc((yyvsp[(1) - (4)].s), (yyvsp[(3) - (4)].a)); }
     break;
 
   case 18:
