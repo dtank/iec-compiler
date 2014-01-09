@@ -322,8 +322,6 @@ callbuiltin(struct fncall *f)
   sl = fn->syms;
   for(nargs = 0; sl; sl = sl->next)
     nargs++;
-  printf("name = %s\n", fn->name);
-  printf("nargs = %s\n", fn->syms->sym->name);
   /* prepare to save them */
   newval = (double *)malloc(nargs * sizeof(double));
   /* evaluate the arguments */
@@ -336,10 +334,15 @@ callbuiltin(struct fncall *f)
       args = NULL;
     }
   }
+  fprintf(progfp, "function:%s  ", fn->name);
+  for(i = 0; i < nargs; i++) {
+	  fprintf(progfp, "arg%d:%d ", i+1, rownumber+i);
+  }
+  fprintf(progfp, "\n");
   /* print the list of args(Key/Value mapping) */
-  printf("args:\n");
+  fprintf(argsfp, "args of %s:\n", fn->name);
   for(i = 0; i < nargs; i++){
-    printf("args = %g\n", newval[i]);
+    fprintf(argsfp, "%d %g\n", rownumber++, newval[i]);
     sum += newval[i];
   }
   free(newval);
@@ -475,8 +478,13 @@ int
 main()
 {
 	init_symtab();
-  printf("> "); 
-  return yyparse();
+	argsfp = fopen("args", "w");
+	progfp = fopen("prog", "w");
+    printf("> "); 
+    yyparse();
+	fclose(argsfp);
+	fclose(progfp);
+	return 0;
 }
 
 /* debugging: dump out an AST */

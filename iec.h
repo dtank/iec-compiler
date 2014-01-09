@@ -16,6 +16,8 @@ struct symbol {		/* a variable name */
   struct symlist *syms; /* list of dummy args */
 };
 int rownumber;
+FILE *argsfp;
+FILE *progfp;
 
 /* simple symtab of fixed size */
 #define NHASH 9997
