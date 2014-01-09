@@ -15,6 +15,7 @@ struct symbol {		/* a variable name */
   struct ast *func;	/* stmt for the function */
   struct symlist *syms; /* list of dummy args */
 };
+int rownumber;
 
 /* simple symtab of fixed size */
 #define NHASH 9997
@@ -29,6 +30,7 @@ struct symlist {
 };
 
 struct symlist *newsymlist(struct symbol *sym, struct symlist *next);
+struct symbol * newsymbol(char *name, double value, struct ast *func, struct symlist *syms);
 void symlistfree(struct symlist *sl);
 
 /* node types

@@ -28,15 +28,27 @@ symhash(char *sym)
 }
 void init_symtab(void) {
 	char *sym = "ADD";
-	struct symbol arg2 = {"arg2", 0, NULL, NULL};
-	struct symlist arg2list = {&arg2, NULL};
-	struct symbol arg1 = {"arg1", 0, NULL, &arg2list};
-	struct symlist arg1list = {&arg1, &arg2list};
+	struct symbol *arg2 = newsymbol("arg2", 0, NULL, NULL);
+	struct symlist *arg2list = newsymlist(arg2, NULL);
+	struct symbol *arg1 = newsymbol("arg1", 0, NULL, NULL);
+	struct symlist *arg1list = newsymlist(arg1, arg2list);
     struct symbol *sp = &symtab[symhash(sym)%NHASH];
-    sp->name = strdup(sym);
+    sp->name = sym;
     sp->value = 0;
     sp->func = NULL;
-    sp->syms = &arg1list;
+    sp->syms = arg1list;
+}
+struct symbol *newsymbol(char *name, double value, struct ast *func, struct symlist *syms) {
+	struct symbol *sym = malloc(sizeof(struct symbol));
+	if(!sym) {
+		yyerror("out of space");
+		exit(0);
+	}
+	sym->name = name; /* maybe strdup() is necessary */ 
+	sym->value = value;
+	sym->func = func;
+	sym->syms = syms;
+	return sym;
 }
 struct symbol *
 lookup(char* sym)
@@ -298,12 +310,20 @@ eval(struct ast *a)
 static double
 callbuiltin(struct fncall *f)
 {
+  struct symbol *fn = f->s;
   struct ast *args = f->l;
+  struct symlist *sl;
   double *oldval, *newval;
   double sum;
-  int nargs = 3;
+  int nargs;
   int i;
 
+  /* count the arguments */
+  sl = fn->syms;
+  for(nargs = 0; sl; sl = sl->next)
+    nargs++;
+  printf("name = %s\n", fn->name);
+  printf("nargs = %s\n", fn->syms->sym->name);
   /* prepare to save them */
   newval = (double *)malloc(nargs * sizeof(double));
   /* evaluate the arguments */
@@ -316,10 +336,12 @@ callbuiltin(struct fncall *f)
       args = NULL;
     }
   }
-	for(i = 0; i < nargs; i++){
-	  printf("args = %g\n", newval[i]);
-	  sum += newval[i];
-	}
+  /* print the list of args(Key/Value mapping) */
+  printf("args:\n");
+  for(i = 0; i < nargs; i++){
+    printf("args = %g\n", newval[i]);
+    sum += newval[i];
+  }
   free(newval);
     return sum;
 }
