@@ -21,12 +21,12 @@ EXP	([Ee][-+]?[0-9]+)
 "-" |
 "*" |
 "/" |
-"=" |
 "|" |
 "," |
 ";" |
 "(" |
 ")"     { return yytext[0]; }
+":="    { return ASSIGN; }
 
  /* comparison ops */
 ">"     { yylval.fn = 1; return CMP; }

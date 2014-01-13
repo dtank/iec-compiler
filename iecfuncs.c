@@ -334,12 +334,13 @@ callbuiltin(struct fncall *f)
       args = NULL;
     }
   }
+  /* output the sequence of calling functions & pointer to args to file "prog" */
   fprintf(progfp, "function:%s  ", fn->name);
   for(i = 0; i < nargs; i++) {
 	  fprintf(progfp, "arg%d:%d ", i+1, rownumber+i);
   }
   fprintf(progfp, "\n");
-  /* print the list of args(Key/Value mapping) */
+  /* output the list of args(Key/Value mapping) to file "args" */
   fprintf(argsfp, "args of %s:\n", fn->name);
   for(i = 0; i < nargs; i++){
     fprintf(argsfp, "%d %g\n", rownumber++, newval[i]);

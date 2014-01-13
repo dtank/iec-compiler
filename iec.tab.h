@@ -48,7 +48,8 @@
      DO = 266,
      LET = 267,
      CMP = 268,
-     UMINUS = 269
+     ASSIGN = 269,
+     UMINUS = 270
    };
 #endif
 
@@ -70,7 +71,7 @@ typedef union YYSTYPE
 
 
 /* Line 2068 of yacc.c  */
-#line 74 "iec.tab.h"
+#line 75 "iec.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

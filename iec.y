@@ -30,7 +30,7 @@
 
 
 %nonassoc <fn> CMP
-%right '='
+%right ASSIGN
 %left '+' '-'
 %left '*' '/'
 %nonassoc '|' UMINUS
@@ -67,7 +67,7 @@ exp: exp CMP exp          { $$ = newcmp($2, $1, $3); }
    | NUMBER               { $$ = newnum($1); }
    | FUNC '(' explist ')' { $$ = newfunc($1, $3); }
    | NAME                 { $$ = newref($1); }
-   | NAME '=' exp         { $$ = newasgn($1, $3); }
+   | NAME ASSIGN exp         { $$ = newasgn($1, $3); }
    | NAME '(' explist ')' { $$ = newcall($1, $3); }
 ;
 
