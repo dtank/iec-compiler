@@ -41,15 +41,8 @@
      NAME = 259,
      FUNC = 260,
      EOL = 261,
-     IF = 262,
-     THEN = 263,
-     ELSE = 264,
-     WHILE = 265,
-     DO = 266,
-     LET = 267,
-     CMP = 268,
-     ASSIGN = 269,
-     UMINUS = 270
+     ASSIGN = 262,
+     UMINUS = 263
    };
 #endif
 
@@ -71,7 +64,7 @@ typedef union YYSTYPE
 
 
 /* Line 2068 of yacc.c  */
-#line 75 "iec.tab.h"
+#line 68 "iec.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

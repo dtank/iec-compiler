@@ -15,7 +15,7 @@ struct symbol {		/* a variable name */
   struct ast *func;	/* stmt for the function */
   struct symlist *syms; /* list of dummy args */
 };
-int rownumber;
+int argno;
 FILE *argsfp;
 FILE *progfp;
 
@@ -65,19 +65,6 @@ struct fncall {			/* built-in function */
   struct symbol *s;
 };
 
-struct ufncall {		/* user function */
-  int nodetype;			/* type C */
-  struct ast *l;		/* list of arguments */
-  struct symbol *s;
-};
-
-struct flow {
-  int nodetype;			/* type I or W */
-  struct ast *cond;		/* condition */
-  struct ast *tl;		/* then or do list */
-  struct ast *el;		/* optional else list */
-};
-
 struct numval {
   int nodetype;			/* type K */
   double number;
@@ -96,16 +83,10 @@ struct symasgn {
 
 /* build an AST */
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
-struct ast *newcmp(int cmptype, struct ast *l, struct ast *r);
 struct ast *newfunc(struct symbol *s, struct ast *l);
-struct ast *newcall(struct symbol *s, struct ast *l);
 struct ast *newref(struct symbol *s);
 struct ast *newasgn(struct symbol *s, struct ast *v);
 struct ast *newnum(double d);
-struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *tr);
-
-/* define a function */
-void dodef(struct symbol *name, struct symlist *syms, struct ast *stmts);
 
 /* evaluate an AST */
 double eval(struct ast *);
