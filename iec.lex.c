@@ -836,7 +836,7 @@ YY_RULE_SETUP
 case 11:
 YY_RULE_SETUP
 #line 34 "iec.l"
-{ yylval.s = lookup(yytext); return FUNC; }
+{ yylval.fn = 0; return FUNC; }
 	YY_BREAK
 /* debug hack */
 case 12:

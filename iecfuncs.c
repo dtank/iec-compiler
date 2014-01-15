@@ -26,17 +26,30 @@ symhash(char *sym)
 
   return hash;
 }
-void init_symtab(void) {
-	char *sym = "ADD";
-	struct symbol *arg2 = newsymbol("arg2", 0, NULL, NULL);
-	struct symlist *arg2list = newsymlist(arg2, NULL);
-	struct symbol *arg1 = newsymbol("arg1", 0, NULL, NULL);
-	struct symlist *arg1list = newsymlist(arg1, arg2list);
-    struct symbol *sp = &symtab[symhash(sym)%NHASH];
-    sp->name = sym;
-    sp->value = 0;
-    sp->func = NULL;
-    sp->syms = arg1list;
+void init_funcinfotab(void) {
+	struct arglist *arg2list = newarglist("DOUBLE", NULL);
+	struct arglist *arg1list = newarglist("DOUBLE", arg2list);
+	struct funcinfo *addfunc = newfuncinfo("ADD", arg1list, "DOUBLE");
+	funcinfotab[0] = addfunc;
+}
+struct funcinfo *newfuncinfo(char *name, struct arglist *parlist, char *rettype) {
+	struct funcinfo *func = malloc(sizeof(struct funcinfo));
+	if(!func) {
+		yyerror("out of space");
+		exit(0);
+	}
+	func->name = name;
+	func->parlist = parlist;
+	func->rettype = rettype;
+}
+struct arglist *newarglist(char *type, struct arglist *next) {
+	struct arglist *args = malloc(sizeof(struct arglist));
+	if(!args) {
+		yyerror("out of space");
+		exit(0);
+	}
+	args->type = type;
+	args->next = next;	
 }
 struct symbol *newsymbol(char *name, double value, struct ast *func, struct symlist *syms) {
 	struct symbol *sym = malloc(sizeof(struct symbol));
@@ -107,7 +120,7 @@ newnum(double d)
 
 
 struct ast *
-newfunc(struct symbol *s, struct ast *l)
+newfunc(int fn, struct ast *l)
 {
   struct fncall *a = malloc(sizeof(struct fncall));
   
@@ -117,7 +130,7 @@ newfunc(struct symbol *s, struct ast *l)
   }
   a->nodetype = 'F';
   a->l = l;
-  a->s = s;
+  a->func = funcinfotab[fn];
   return (struct ast *)a;
 }
 
@@ -222,72 +235,32 @@ eval(struct ast *a)
 static double
 callbuiltin(struct fncall *f)
 {
-  struct symbol *fn = f->s;
-  struct ast *args = f->l;
-  struct symlist *sl;
-  double *oldval, *newval;
-  double sum;
-  int nargs;
-  int i;
-
-  /* count the arguments */
-  sl = fn->syms;
-  for(nargs = 0; sl; sl = sl->next)
-    nargs++;
-  /* prepare to save them */
-  newval = (double *)malloc(nargs * sizeof(double));
-  /* evaluate the arguments */
-  for(i = 0; i < nargs; i++){
-    if(args->nodetype == 'L') {	/* if this is a list node */
-      newval[i] = eval(args->l);
-      args = args->r;
-    } else {			/* if it's the end of the list */
-      newval[i] = eval(args);
-      args = NULL;
-    }
-  }
-  /* output the sequence of calling functions & pointer to args to file "prog" */
- /* fprintf(progfp, "function:%s  ", fn->name);
-  for(i = 0; i < nargs; i++) {
-	  fprintf(progfp, "arg%d:%d ", i+1, rownumber+i);
-  }
-  fprintf(progfp, "\n");
-  /* output the list of args(Key/Value mapping) to file "args" */
-  /*fprintf(argsfp, "args of %s:\n", fn->name);
-  for(i = 0; i < nargs; i++){
-    fprintf(argsfp, "%d %g\n", rownumber++, newval[i]);
-    sum += newval[i];
-  }*/
-  free(newval);
-    return sum;
+    return 0.0;
 }
 void emitfunc(struct fncall *f) {
 	
-  struct symbol *fn = f->s;
+  struct funcinfo *func = f->func;
   struct ast *args = f->l;
-  struct symlist *sl;
   int nargs;
   int i;
 
   /* count the arguments */
-  sl = fn->syms;
-  for(nargs = 0; sl; sl = sl->next)
-    nargs++;
-  fprintf(progfp, "FUN%d:%s  ", funcid, fn->name);
+  struct arglist *parlist = func->parlist;
+  fprintf(progfp, "FUN%d:%s  ", funcid, func->name);
   /* print the arguments */
-  for(i = 0; i < nargs; i++){
+  for(; parlist; parlist = parlist->next){
     if(args->nodetype == 'L') {	/* if this is a list node */
 		if(args->l->nodetype == 'K') {
-			fprintf(progfp, "NUM: %6g ", ((struct numval *)args->l)->number);
+			fprintf(progfp, "%s: %6g(NUM) ", parlist->type, ((struct numval *)args->l)->number);
 		} else if(args->l->nodetype == 'N'){
-			fprintf(progfp, "VAR: %6s ", ((struct symref *)args->l)->s->name);
+			fprintf(progfp, "%s: %6s(VAR) ", parlist->type, ((struct symref *)args->l)->s->name);
 		}
 		args = args->r;
     } else {			/* if it's the end of the list */
 		if(args->nodetype == 'K') {
-			fprintf(progfp, "NUM: %6g ", ((struct numval *)args)->number);
+			fprintf(progfp, "%s: %6g(NUM) ", parlist->type, ((struct numval *)args)->number);
 		} else if(args->nodetype == 'N') {
-			fprintf(progfp, "VAR: %6s ", ((struct symref *)args)->s->name);
+			fprintf(progfp, "%s: %6s(VAR) ", parlist->type, ((struct symref *)args)->s->name);
 		}
       args = NULL;
     }
@@ -351,7 +324,7 @@ yyerror(char *s, ...)
 int
 main()
 {
-	init_symtab();
+	init_funcinfotab();
 	argsfp = fopen("args", "w");
 	progfp = fopen("prog", "w");
     printf("> "); 
@@ -399,7 +372,7 @@ dumpast(struct ast *a, int level)
     return;
 	              
   case 'F':
-    printf("builtin %s\n", ((struct fncall *)a)->s->name);
+    printf("builtin %s\n", ((struct fncall *)a)->func->name);
     dumpast(a->l, level);
     return;
 

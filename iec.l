@@ -31,7 +31,7 @@ EXP	([Ee][-+]?[0-9]+)
  /* keywords */
 
  /* built in functions */
-"ADD"   { yylval.s = lookup(yytext); return FUNC; }
+"ADD"   { yylval.fn = 0; return FUNC; }
 
  /* debug hack */
 "debug"[0-9]+ { debug = atoi(&yytext[5]); printf("debug set to %d\n", debug); }

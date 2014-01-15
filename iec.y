@@ -23,7 +23,7 @@
 /* declare tokens */
 %token <d> NUMBER
 %token <s> NAME
-%token <s> FUNC
+%token <fn> FUNC
 %token EOL
 
 

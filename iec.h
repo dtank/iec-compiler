@@ -15,10 +15,22 @@ struct symbol {		/* a variable name */
   struct ast *func;	/* stmt for the function */
   struct symlist *syms; /* list of dummy args */
 };
+/* new adding */
 int funcid;
 FILE *argsfp;
 FILE *progfp;
-
+struct arglist {
+	char *type;
+	struct arglist *next;	
+};
+struct funcinfo {
+	char *name;
+	struct arglist *parlist;
+	char *rettype; 
+};
+struct funcinfo *funcinfotab[10];
+struct arglist *newarglist(char *type, struct arglist *next);
+struct funcinfo *newfuncinfo(char *name, struct arglist *parlist, char *rettype);
 /* simple symtab of fixed size */
 #define NHASH 9997
 struct symbol symtab[NHASH];
@@ -63,7 +75,7 @@ struct ast {
 struct fncall {			/* built-in function */
   int nodetype;			/* type F */
   struct ast *l;
-  struct symbol *s;
+  struct funcinfo *func;
 };
 
 struct numval {
@@ -84,7 +96,7 @@ struct symasgn {
 
 /* build an AST */
 struct ast *newast(int nodetype, struct ast *l, struct ast *r);
-struct ast *newfunc(struct symbol *s, struct ast *l);
+struct ast *newfunc(int fn, struct ast *l);
 struct ast *newref(struct symbol *s);
 struct ast *newasgn(struct symbol *s, struct ast *v);
 struct ast *newnum(double d);

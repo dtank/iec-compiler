@@ -1437,7 +1437,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 53 "iec.y"
-    { (yyval.a) = newfunc((yyvsp[(1) - (4)].s), (yyvsp[(3) - (4)].a)); emitfunc((struct fncall*)(yyval.a));}
+    { (yyval.a) = newfunc((yyvsp[(1) - (4)].fn), (yyvsp[(3) - (4)].a)); emitfunc((struct fncall*)(yyval.a));}
     break;
 
   case 12:
