@@ -15,7 +15,7 @@ struct symbol {		/* a variable name */
   struct ast *func;	/* stmt for the function */
   struct symlist *syms; /* list of dummy args */
 };
-int argno;
+int funcid;
 FILE *argsfp;
 FILE *progfp;
 
@@ -59,6 +59,7 @@ struct ast {
   struct ast *r;
 };
 
+// TODO mofify fncall to include info of return
 struct fncall {			/* built-in function */
   int nodetype;			/* type F */
   struct ast *l;

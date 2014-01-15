@@ -266,7 +266,6 @@ void emitfunc(struct fncall *f) {
   struct symbol *fn = f->s;
   struct ast *args = f->l;
   struct symlist *sl;
-  double *oldval, *newval;
   int nargs;
   int i;
 
@@ -274,33 +273,34 @@ void emitfunc(struct fncall *f) {
   sl = fn->syms;
   for(nargs = 0; sl; sl = sl->next)
     nargs++;
-  /* prepare to save them */
-  newval = (double *)malloc(nargs * sizeof(double));
-  /* evaluate the arguments */
+  fprintf(progfp, "FUN%d:%s  ", funcid, fn->name);
+  /* print the arguments */
   for(i = 0; i < nargs; i++){
     if(args->nodetype == 'L') {	/* if this is a list node */
-      newval[i] = eval(args->l);
-      args = args->r;
+		if(args->l->nodetype == 'K') {
+			fprintf(progfp, "NUM: %6g ", ((struct numval *)args->l)->number);
+		} else if(args->l->nodetype == 'N'){
+			fprintf(progfp, "VAR: %6s ", ((struct symref *)args->l)->s->name);
+		}
+		args = args->r;
     } else {			/* if it's the end of the list */
-      newval[i] = eval(args);
+		if(args->nodetype == 'K') {
+			fprintf(progfp, "NUM: %6g ", ((struct numval *)args)->number);
+		} else if(args->nodetype == 'N') {
+			fprintf(progfp, "VAR: %6s ", ((struct symref *)args)->s->name);
+		}
       args = NULL;
     }
   }
-  /* output the sequence of calling functions & pointer to args to file "prog" */
-  fprintf(progfp, "function:%s  ", fn->name);
-  for(i = 0; i < nargs; i++) {
-	  fprintf(progfp, "arg%d:%d ", i+1, argno+i);
-  }
+  fprintf(progfp, " RET%d:NULL", funcid++);
   fprintf(progfp, "\n");
-  /* output the list of args(Key/Value mapping) to file "args" */
-  /*fprintf(argsfp, "args of %s:\n", fn->name);
-  for(i = 0; i < nargs; i++){
-    fprintf(argsfp, "%d %g\n", argno++, newval[i]);
-  }*/
 }
-void emitasgn(struct symasgn *ast) {
-    double value = eval(ast->v);
-	fprintf(argsfp, "%d %g\n", argno++, value);
+void emitasgn(struct symasgn *a) {
+	if(a->v->nodetype == 'K') {
+	    fprintf(argsfp, "%s %g\n", a->s->name, ((struct numval *)a->v)->number);
+	} else if(a->v->nodetype == 'F') {
+	    fprintf(argsfp, "%s RET%d\n", a->s->name, funcid-1);
+	}
 }
 /* TODO emitexplist */
 
