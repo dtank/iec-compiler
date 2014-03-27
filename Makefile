@@ -9,10 +9,10 @@ Target=iec_compiler
 Source=iec
 all: ${Target}
 
-${Target}:	${Source}.l ${Source}.y ${Source}.h ${Source}funcs.c 
+${Target}:	${Source}.l ${Source}.y
 	bison -d ${Source}.y
 	flex -o ${Source}.lex.c ${Source}.l
-	cc -g -o $@ ${Source}.tab.c ${Source}.lex.c ${Source}funcs.c -lm #-lm指链接到libm.so数学函数动态链接库
+	gcc -g -o $@ ${Source}.tab.c ${Source}.lex.c -lm #-lm指链接到libm.so数学函数动态链接库
 
 clean:
-	rm -f ${Target} ${Source}.tab.c ${Source}.tab.h ${Target}.lex.c
+	rm -f ${Target} ${Source}.tab.c ${Source}.tab.h ${Source}.lex.c
