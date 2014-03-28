@@ -1,14 +1,30 @@
-/**
- * Flex Options
- */
+ /**
+  * PART 1.1
+  * CONTENT: Flex Options
+  */
+ /* use char *yytext instead of char yytext[] to store the input lexeme */
 %pointer
-
+ /* Don't need function noyywrap() */
 %option noyywrap
+ /* Required for the use of yylineno */
 %option yylineno
-
+ /* Required for the use of function yy_pop_state() & yy_push_state() */
+%option stack
+ /**
+  * PART 1.2
+  * CONTENT: File Including
+  */
 %{
 #include "iec.tab.h"
 #define TEST_FLEX
+%}
+ /**
+  * PART 1.6
+  * CONTENT: Forward Declaration Of Functions Defined Later
+  */
+%{
+ /* Return the current token back to the input stream */
+void unput_text(unsigned int n);
 %}
  /**
   * CONTENT: State Definition
@@ -18,6 +34,7 @@
 %s vardecl_state
 %x body_state
 %s il_state
+%s st_state
 
  /**
   * CONTENT: Pattern Naming
@@ -27,11 +44,12 @@
 st_whitespace	[ \f\n\r\t\v]*
 il_whitespace	[ \f\r\t\v]*
  /* Letters, Digits and Identifiers */
-letter	    	[A-Za-z]
-digit    		[0-9]
-octal_digit 	[0-7]
-hex_digit   	{digit}|[A-F]
-identifier  	({letter}|(_({letter}|{digit})))((_?({letter}|{digit}))*)
+letter               [A-Za-z]
+digit                [0-9]
+octal_digit          [0-7]
+hex_digit            {digit}|[A-F]
+identifier           ({letter}|(_({letter}|{digit})))((_?({letter}|{digit}))*)
+qualified_identifier {identifier}(\.{identifier})+
  /* Numeric Literals */
 integer         {digit}((_?{digit})*)
 integer_0_59    (0(_?))*([0-5](_?))?{digit}
@@ -46,14 +64,106 @@ hex_integer     16#{hex_digit}((_?{hex_digit})*)
 exponent        [Ee]([+-]?){integer}
 real	    	{integer}\.{integer}{exponent}
 fixed_point     {integer}\.{integer}
+ /* Directly Represented Variables */
+location_prefix          [IQM]
+size_prefix              [XBWDL]
+direct_variable_standard %{location_prefix}({size_prefix}?){integer}((.{integer})*)
+direct_variable          {direct_variable_standard}
+incompl_location         %[IQM]\*
 
 %%
+ /**
+  * PATTERN: State Identifiers
+  * ACTIONS: Change State
+  */
+ /* INITIAL -> header_state */
+<INITIAL>{
+FUNCTION	   yy_push_state(header_state); return FUNCTION;
+FUNCTION_BLOCK yy_push_state(header_state); return FUNCTION_BLOCK;
+PROGRAM        yy_push_state(header_state); return PROGRAM;
+}
+ /* header_state -> vardecl_list_state */
+<header_state>{
+VAR          |
+VAR_INPUT    |
+VAR_OUTPUT   |
+VAR_IN_OUT   |
+VAR_EXTERNAL |
+VAR_GLOBAL   |
+VAR_TEMP     |
+VAR_CONFIG   |
+VAR_ACCESS   unput_text(0); BEGIN(vardecl_list_state);
+}
+ /* vardecl_list_state -> (vardecl_state | body_state | INITIAL) */
+<vardecl_list_state>{
+VAR_INPUT    |
+VAR_OUTPUT   |
+VAR_IN_OUT   |
+VAR_EXTERNAL |
+VAR_GLOBAL   |
+VAR_TEMP     |
+VAR_CONFIG   |
+VAR_ACCESS   |
+VAR          unput_text(0); yy_push_state(vardecl_state);
+
+END_FUNCTION	   unput_text(0); BEGIN(INITIAL);
+END_FUNCTION_BLOCK unput_text(0); BEGIN(INITIAL);
+END_PROGRAM		   unput_text(0); BEGIN(INITIAL);
+
+. unput_text(0); yy_push_state(body_state);
+}
+ /* vardecl_list_state -> pop to $previous_state (vardecl_list_state) */
+<vardecl_state>{
+END_VAR	yy_pop_state(); return END_VAR;
+}
+ /* body_state -> (il_state | st_state) */
+<body_state>{
+
+{qualified_identifier}     unput_text(0); BEGIN(st_state);
+{direct_variable_standard} unput_text(0); BEGIN(st_state);
+
+RETURN unput_text(0); BEGIN(st_state);
+IF     unput_text(0); BEGIN(st_state);
+CASE   unput_text(0); BEGIN(st_state);
+FOR    unput_text(0); BEGIN(st_state);
+WHILE  unput_text(0); BEGIN(st_state);
+EXIT   unput_text(0); BEGIN(st_state);
+REPEAT unput_text(0); BEGIN(st_state);
+
+:= unput_text(0); BEGIN(st_state);
+
+ /*
+  *{identifier} {
+  *    int token = get_identifier_token(yytext);
+  *    if ((token == prev_declared_fb_name_token) || (token == prev_declared_variable_name_token)) {
+  *        [> the code has a call to a function block OR has an assingment with a variable as the lvalue <]
+  *        unput_text(0); BEGIN(st_state);
+  *    } else if (token == prev_declared_derived_function_name_token) {
+  *        [> the code has a call to a function - must be IL <]
+  *        unput_text(0); BEGIN(il_state);
+  *    } else {
+  *        [> Might be a lable in IL, or a bug in ST/IL code. We jump to IL <]
+  *        unput_text(0); BEGIN(il_state);
+  *    }
+  *}
+  */
+
+. unput_text(0); BEGIN(il_state); /* Don't know what it could be. This is most likely a bug. Let's just to a random state... */
+}
+ /* (il_state | st_state) -> pop to $previous_state (vardecl_list_state) */
+<il_state,st_state>{
+END_FUNCTION       yy_pop_state(); unput_text(0);
+END_FUNCTION_BLOCK yy_pop_state(); unput_text(0);
+END_PROGRAM        yy_pop_state(); unput_text(0);
+}
+
+
  /**
   * PATTERN: Whitespace
   * ACTIONS: Do nothing to eat any whitespace
   */
-<INITIAL>{st_whitespace}
-il_whitespace
+<INITIAL,header_state,body_state,vardecl_list_state,vardecl_state,st_state>{st_whitespace}
+<il_state>{il_whitespace}
 
  /**
   * PATTERN: Public Keywords
@@ -140,10 +250,10 @@ READ_WRITE        return READ_WRITE;
 READ_ONLY         return READ_ONLY;
  /* Public Operators */
 AND return AND;
-MOD return MOD;
 OR  return OR;
 XOR return XOR;
 NOT return NOT;
+MOD return MOD;
  /* ST Subprogram Control Statements */
 RETURN return RETURN;
  /* ST Selection Statements */
@@ -216,7 +326,7 @@ JMPC  return JMPC;
 JMPCN return JMPCN;
 }
 
-
+ /* TODO: Don't forget the '&' operator */
 
 
 
@@ -238,6 +348,13 @@ JMPCN return JMPCN;
 
 .	{return 0;}
 %%
+/**
+ * @brief  unput_text() return the current token back to the input stream
+ * @param  n
+ */
+void unput_text(unsigned int n) {
+	yyless(n);
+}
 #ifdef TEST_FLEX
 int main(int argc, char **argv) {
 	int token;
