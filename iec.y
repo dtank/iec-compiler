@@ -7,7 +7,7 @@
  /**
   * CONTENTS: Define the token
   */
- /* TOKEN: Keywords */
+ /* TOKEN: IEC61131-3 Keywords */
  /* EN & ENO */
 %token EN
 %token ENO
@@ -87,12 +87,6 @@
 %token WITH
 %token READ_WRITE
 %token READ_ONLY
- /* Public Operators */
-%token AND
-%token MOD
-%token OR
-%token XOR
-%token NOT
  /* ST Subprogram Control Statements */
 %token RETURN
  /* ST Selection Statements */
@@ -119,6 +113,52 @@
 %token END_REPEAT
 
 %token EXIT
+
+ /* TOKEN: Shared Operators */
+ /* ST, IL & Standard Functions (Also IEC61131-3 Keywords) */
+%token AND
+%token OR
+%token XOR
+%token NOT
+%token MOD
+ /* IL & Standard Functions (Also IEC61131-3 Keywords) */
+%token ADD
+%token SUB
+%token MUL
+%token DIV
+%token GT
+%token GE
+%token EQ
+%token LT
+%token LE
+%token NE
+ /* ST & IL (Only the character '&') */
+%token AND2
+ /* IL & SFC action qualifiers */
+%token S
+%token R
+
+ /* TOKEN: IL STATE EXCLUSIVE */
+ /* EOL */
+%token EOL
+ /* IL operators have no clashes */
+%token LD
+%token LDN
+%token ST
+%token STN
+%token ANDN
+%token ANDN2 /* characters '&N' in the source code */
+%token ORN
+%token XORN
+%token CAL
+%token CALC
+%token CALCN
+%token RET
+%token RETC
+%token RETCN
+%token JMP
+%token JMPC
+%token JMPCN
 
 
 

@@ -11,6 +11,15 @@
 #define TEST_FLEX
 %}
  /**
+  * CONTENT: State Definition
+  */
+%s header_state
+%x vardecl_list_state
+%s vardecl_state
+%x body_state
+%s il_state
+
+ /**
   * CONTENT: Pattern Naming
   * PURPOSE: To use pattern easily
   */
@@ -47,7 +56,7 @@ fixed_point     {integer}\.{integer}
 il_whitespace
 
  /**
-  * PATTERN: Keywords
+  * PATTERN: Public Keywords
   * ACTIONS: Return the token defined by bison
   */
  /* EN & ENO */
@@ -161,6 +170,52 @@ UNTIL      return UNTIL;
 END_REPEAT return END_REPEAT;
 
 EXIT       return EXIT;
+
+ /**
+  * PATTERN: IL STATE EXCLUSIVE
+  * ACTIONS: Return the token defined by bison
+  */
+ /* EOL */
+<il_state>\n return EOL;
+ /* IL operators clashing with standard functions keywords */
+<il_state>{
+ADD return ADD;
+SUB return SUB;
+MUL return MUL;
+DIV return DIV;
+EQ  return EQ;
+GE  return GE;
+GT  return GT;
+LE  return LE;
+LT  return LT;
+NE  return NE;
+}
+ /* IL operators clashing with SFC action qualifiers */
+<il_state>{
+S return S;
+R return R;
+}
+ /* IL operators have no clashes */
+<il_state>{
+LD    return LD;
+LDN   return LDN;
+ST    return ST;
+STN   return STN;
+ANDN  return ANDN;
+&N    return ANDN2;
+ORN   return ORN;
+XORN  return XORN;
+CAL   return CAL;
+CALC  return CALC;
+CALCN return CALCN;
+RET   return RET;
+RETC  return RETC;
+RETCN return RETCN;
+JMP   return JMP;
+JMPC  return JMPC;
+JMPCN return JMPCN;
+}
+
 
 
 

@@ -158,36 +158,67 @@
      WITH = 319,
      READ_WRITE = 320,
      READ_ONLY = 321,
-     AND = 322,
-     MOD = 323,
-     OR = 324,
-     XOR = 325,
-     NOT = 326,
-     RETURN = 327,
-     IF = 328,
-     THEN = 329,
-     ELSIF = 330,
-     ELSE = 331,
-     END_IF = 332,
-     CASE = 333,
-     END_CASE = 334,
-     FOR = 335,
-     TO = 336,
-     BY = 337,
-     DO = 338,
-     END_FOR = 339,
-     WHILE = 340,
-     END_WHILE = 341,
-     REPEAT = 342,
-     UNTIL = 343,
-     END_REPEAT = 344,
-     EXIT = 345,
-     integer_token = 346,
-     real_token = 347,
-     fixed_point_token = 348,
-     binary_integer_token = 349,
-     octal_integer_token = 350,
-     hex_integer_token = 351
+     RETURN = 322,
+     IF = 323,
+     THEN = 324,
+     ELSIF = 325,
+     ELSE = 326,
+     END_IF = 327,
+     CASE = 328,
+     END_CASE = 329,
+     FOR = 330,
+     TO = 331,
+     BY = 332,
+     DO = 333,
+     END_FOR = 334,
+     WHILE = 335,
+     END_WHILE = 336,
+     REPEAT = 337,
+     UNTIL = 338,
+     END_REPEAT = 339,
+     EXIT = 340,
+     AND = 341,
+     OR = 342,
+     XOR = 343,
+     NOT = 344,
+     MOD = 345,
+     ADD = 346,
+     SUB = 347,
+     MUL = 348,
+     DIV = 349,
+     GT = 350,
+     GE = 351,
+     EQ = 352,
+     LT = 353,
+     LE = 354,
+     NE = 355,
+     AND2 = 356,
+     S = 357,
+     R = 358,
+     EOL = 359,
+     LD = 360,
+     LDN = 361,
+     ST = 362,
+     STN = 363,
+     ANDN = 364,
+     ANDN2 = 365,
+     ORN = 366,
+     XORN = 367,
+     CAL = 368,
+     CALC = 369,
+     CALCN = 370,
+     RET = 371,
+     RETC = 372,
+     RETCN = 373,
+     JMP = 374,
+     JMPC = 375,
+     JMPCN = 376,
+     integer_token = 377,
+     real_token = 378,
+     fixed_point_token = 379,
+     binary_integer_token = 380,
+     octal_integer_token = 381,
+     hex_integer_token = 382
    };
 #endif
 
@@ -205,7 +236,7 @@ typedef union YYSTYPE
 
 
 /* Line 293 of yacc.c  */
-#line 209 "iec.tab.c"
+#line 240 "iec.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -217,7 +248,7 @@ typedef union YYSTYPE
 
 
 /* Line 343 of yacc.c  */
-#line 221 "iec.tab.c"
+#line 252 "iec.tab.c"
 
 #ifdef short
 # undef short
@@ -439,7 +470,7 @@ union yyalloc
 #define YYLAST   0
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  97
+#define YYNTOKENS  128
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  2
 /* YYNRULES -- Number of rules.  */
@@ -449,7 +480,7 @@ union yyalloc
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   351
+#define YYMAXUTOK   382
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -492,7 +523,10 @@ static const yytype_uint8 yytranslate[] =
       65,    66,    67,    68,    69,    70,    71,    72,    73,    74,
       75,    76,    77,    78,    79,    80,    81,    82,    83,    84,
       85,    86,    87,    88,    89,    90,    91,    92,    93,    94,
-      95,    96
+      95,    96,    97,    98,    99,   100,   101,   102,   103,   104,
+     105,   106,   107,   108,   109,   110,   111,   112,   113,   114,
+     115,   116,   117,   118,   119,   120,   121,   122,   123,   124,
+     125,   126,   127
 };
 
 #if YYDEBUG
@@ -504,15 +538,15 @@ static const yytype_uint8 yyprhs[] =
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
-static const yytype_int8 yyrhs[] =
+static const yytype_int16 yyrhs[] =
 {
-      98,     0,    -1,    -1
+     129,     0,    -1,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   138,   138
+       0,   178,   178
 };
 #endif
 
@@ -531,10 +565,13 @@ static const char *const yytname[] =
   "END_FUNCTION", "FUNCTION_BLOCK", "END_FUNCTION_BLOCK", "PROGRAM",
   "END_PROGRAM", "CONFIGURATION", "END_CONFIGURATION", "TASK", "RESOURCE",
   "ON", "END_RESOURCE", "VAR_CONFIG", "VAR_ACCESS", "WITH", "READ_WRITE",
-  "READ_ONLY", "AND", "MOD", "OR", "XOR", "NOT", "RETURN", "IF", "THEN",
-  "ELSIF", "ELSE", "END_IF", "CASE", "END_CASE", "FOR", "TO", "BY", "DO",
-  "END_FOR", "WHILE", "END_WHILE", "REPEAT", "UNTIL", "END_REPEAT", "EXIT",
-  "integer_token", "real_token", "fixed_point_token",
+  "READ_ONLY", "RETURN", "IF", "THEN", "ELSIF", "ELSE", "END_IF", "CASE",
+  "END_CASE", "FOR", "TO", "BY", "DO", "END_FOR", "WHILE", "END_WHILE",
+  "REPEAT", "UNTIL", "END_REPEAT", "EXIT", "AND", "OR", "XOR", "NOT",
+  "MOD", "ADD", "SUB", "MUL", "DIV", "GT", "GE", "EQ", "LT", "LE", "NE",
+  "AND2", "S", "R", "EOL", "LD", "LDN", "ST", "STN", "ANDN", "ANDN2",
+  "ORN", "XORN", "CAL", "CALC", "CALCN", "RET", "RETC", "RETCN", "JMP",
+  "JMPC", "JMPCN", "integer_token", "real_token", "fixed_point_token",
   "binary_integer_token", "octal_integer_token", "hex_integer_token",
   "$accept", "term", 0
 };
@@ -554,14 +591,17 @@ static const yytype_uint16 yytoknum[] =
      315,   316,   317,   318,   319,   320,   321,   322,   323,   324,
      325,   326,   327,   328,   329,   330,   331,   332,   333,   334,
      335,   336,   337,   338,   339,   340,   341,   342,   343,   344,
-     345,   346,   347,   348,   349,   350,   351
+     345,   346,   347,   348,   349,   350,   351,   352,   353,   354,
+     355,   356,   357,   358,   359,   360,   361,   362,   363,   364,
+     365,   366,   367,   368,   369,   370,   371,   372,   373,   374,
+     375,   376,   377,   378,   379,   380,   381,   382
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    97,    98
+       0,   128,   129
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -622,7 +662,7 @@ static const yytype_uint8 yycheck[] =
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    98,     0
+       0,   129,     0
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1459,7 +1499,7 @@ yyreduce:
       
 
 /* Line 1806 of yacc.c  */
-#line 1463 "iec.tab.c"
+#line 1503 "iec.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1690,7 +1730,7 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 140 "iec.y"
+#line 180 "iec.y"
 
 yyerror(char *s) {
 }
