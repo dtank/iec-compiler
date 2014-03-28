@@ -41,8 +41,8 @@ void unput_text(unsigned int n);
   * PURPOSE: To use pattern easily
   */
  /* Whitespace */
-st_whitespace	[ \f\n\r\t\v]*
-il_whitespace	[ \f\r\t\v]*
+st_whitespace [ \f\n\r\t\v]*
+il_whitespace [ \f\r\t\v]*
  /* Letters, Digits and Identifiers */
 letter               [A-Za-z]
 digit                [0-9]
@@ -336,17 +336,17 @@ JMPCN return JMPCN;
   *          Return the token defined by bison
   */
  /* Numeric Literals */
-{integer}	        {yylval.ID = strdup(yytext); return integer_token;}
-{real}	     		{yylval.ID = strdup(yytext); return real_token;}
-{fixed_point}  		{yylval.ID = strdup(yytext); return fixed_point_token;}
-{binary_integer}	{yylval.ID = strdup(yytext); return binary_integer_token;}
-{octal_integer} 	{yylval.ID = strdup(yytext); return octal_integer_token;}
-{hex_integer} 		{yylval.ID = strdup(yytext); return hex_integer_token;}
+{integer}	     yylval.ID = strdup(yytext); return integer_token;
+{real}	     	 yylval.ID = strdup(yytext); return real_token;
+{fixed_point}  	 yylval.ID = strdup(yytext); return fixed_point_token;
+{binary_integer} yylval.ID = strdup(yytext); return binary_integer_token;
+{octal_integer}  yylval.ID = strdup(yytext); return octal_integer_token;
+{hex_integer} 	 yylval.ID = strdup(yytext); return hex_integer_token;
 
 
 
-
-.	{return 0;}
+ /* TODO: Don't forget change 0 to 'yytext[0]' */
+. return 0;
 %%
 /**
  * @brief  unput_text() return the current token back to the input stream

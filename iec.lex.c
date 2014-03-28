@@ -2144,44 +2144,45 @@ return JMPCN;
 case 161:
 YY_RULE_SETUP
 #line 339 "iec.l"
-{yylval.ID = strdup(yytext); return integer_token;}
+yylval.ID = strdup(yytext); return integer_token;
 	YY_BREAK
 case 162:
 YY_RULE_SETUP
 #line 340 "iec.l"
-{yylval.ID = strdup(yytext); return real_token;}
+yylval.ID = strdup(yytext); return real_token;
 	YY_BREAK
 case 163:
 YY_RULE_SETUP
 #line 341 "iec.l"
-{yylval.ID = strdup(yytext); return fixed_point_token;}
+yylval.ID = strdup(yytext); return fixed_point_token;
 	YY_BREAK
 case 164:
 YY_RULE_SETUP
 #line 342 "iec.l"
-{yylval.ID = strdup(yytext); return binary_integer_token;}
+yylval.ID = strdup(yytext); return binary_integer_token;
 	YY_BREAK
 case 165:
 YY_RULE_SETUP
 #line 343 "iec.l"
-{yylval.ID = strdup(yytext); return octal_integer_token;}
+yylval.ID = strdup(yytext); return octal_integer_token;
 	YY_BREAK
 case 166:
 YY_RULE_SETUP
 #line 344 "iec.l"
-{yylval.ID = strdup(yytext); return hex_integer_token;}
+yylval.ID = strdup(yytext); return hex_integer_token;
 	YY_BREAK
+/* TODO: Don't forget change 0 to 'yytext[0]' */
 case 167:
 YY_RULE_SETUP
 #line 349 "iec.l"
-{return 0;}
+return 0;
 	YY_BREAK
 case 168:
 YY_RULE_SETUP
 #line 350 "iec.l"
 ECHO;
 	YY_BREAK
-#line 2185 "iec.lex.c"
+#line 2186 "iec.lex.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(header_state):
 case YY_STATE_EOF(vardecl_list_state):
