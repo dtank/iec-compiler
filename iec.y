@@ -1,10 +1,19 @@
+ /*
+  * PART 1.2
+  */
+%{
+int yylex(void);
+void yyerror(const char *error_msg);
+%}
  /**
+  * PART 1.6
   * CONTENTS: Define the type of token value
   */
 %union {
 	char *ID; /* Token value */
 }
  /**
+  * PART 1.7
   * CONTENTS: Define the token
   */
  /* TOKEN: IEC61131-3 Keywords */
@@ -160,9 +169,7 @@
 %token JMPC
 %token JMPCN
 
-
-
-
+%token BOGUS_TOKEN_ID /* Required for lexer_utils.c */
 
  /* TOKEN: Numeric Literals */
 %token <ID> integer_token
@@ -172,11 +179,17 @@
 %token <ID> octal_integer_token
 %token <ID> hex_integer_token
 
+ /* TOKEN: Letters, Digits & Identifiers */
+%token <ID> identifier_token
 
-
+ /* TODO: */
+%token <ID> prev_declared_fb_name_token
+%token <ID> prev_declared_variable_name_token
+%token <ID> prev_declared_derived_function_name_token
 %%
 term:
 
 %%
-yyerror(char *s) {
+
+void yyerror(const char *error_msg) {
 }

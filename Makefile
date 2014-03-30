@@ -10,9 +10,9 @@ Source=iec
 all: ${Target}
 
 ${Target}:	${Source}.l ${Source}.y
-	bison -d ${Source}.y
-	flex -o ${Source}.lex.c ${Source}.l
-	gcc -g -o $@ ${Source}.tab.c ${Source}.lex.c -lm #-lm指链接到libm.so数学函数动态链接库
+	bison -d -o ${Source}.tab.cc ${Source}.y
+	flex -o ${Source}.lex.cc ${Source}.l
+	gcc  -o $@ ${Source}.tab.cc ${Source}.lex.cc lexer_utils.cc -lstdc++
 
 clean:
 	rm -f ${Target} ${Source}.tab.c ${Source}.tab.h ${Source}.lex.c

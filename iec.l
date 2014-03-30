@@ -4,7 +4,7 @@
   */
  /* use char *yytext instead of char yytext[] to store the input lexeme */
 %pointer
- /* Don't need function noyywrap() */
+ /* NOT use function yywrap() */
 %option noyywrap
  /* Required for the use of yylineno */
 %option yylineno
@@ -15,7 +15,8 @@
   * CONTENT: File Including
   */
 %{
-#include "iec.tab.h"
+#include "iec.tab.hh"
+#include "lexer_utils.hh"
 #define TEST_FLEX
 %}
  /**
@@ -27,7 +28,8 @@
 void unput_text(unsigned int n);
 %}
  /**
-  * CONTENT: State Definition
+  * PART 1.7
+  * CONTENT: State Declaration
   */
 %s header_state
 %x vardecl_list_state
@@ -37,6 +39,7 @@ void unput_text(unsigned int n);
 %s st_state
 
  /**
+  * PART 1.8
   * CONTENT: Pattern Naming
   * PURPOSE: To use pattern easily
   */
@@ -132,21 +135,19 @@ REPEAT unput_text(0); BEGIN(st_state);
 
 := unput_text(0); BEGIN(st_state);
 
- /*
-  *{identifier} {
-  *    int token = get_identifier_token(yytext);
-  *    if ((token == prev_declared_fb_name_token) || (token == prev_declared_variable_name_token)) {
-  *        [> the code has a call to a function block OR has an assingment with a variable as the lvalue <]
-  *        unput_text(0); BEGIN(st_state);
-  *    } else if (token == prev_declared_derived_function_name_token) {
-  *        [> the code has a call to a function - must be IL <]
-  *        unput_text(0); BEGIN(il_state);
-  *    } else {
-  *        [> Might be a lable in IL, or a bug in ST/IL code. We jump to IL <]
-  *        unput_text(0); BEGIN(il_state);
-  *    }
-  *}
-  */
+{identifier} {
+    int token = get_identifier_token(yytext);
+    if ((token == prev_declared_fb_name_token) || (token == prev_declared_variable_name_token)) {
+   	  /*the code has a call to a function block OR has an assingment with a variable as the lvalue */
+   	 unput_text(0); BEGIN(st_state);
+    } else if (token == prev_declared_derived_function_name_token) {
+   	  /*the code has a call to a function - must be IL */
+   	 unput_text(0); BEGIN(il_state);
+    } else {
+   	  /*Might be a lable in IL, or a bug in ST/IL code. We jump to IL */
+   	 unput_text(0); BEGIN(il_state);
+    }
+}
 
 . unput_text(0); BEGIN(il_state); /* Don't know what it could be. This is most likely a bug. Let's just to a random state... */
 }
